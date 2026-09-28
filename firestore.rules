@@ -1,0 +1,161 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Signed-in helper
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // 2. Self helper
+    function isSelf(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // 3. Superadmin email fallback/bootstrap check
+    function isSuperAdminEmail() {
+      return isSignedIn() &&
+        'email' in request.auth.token &&
+        request.auth.token.email != null &&
+        (
+          request.auth.token.email == 'bestanandh@gmail.com' ||
+          request.auth.token.email == 'Bestanandh@gmail.com'
+        );
+    }
+
+    // 4. Administrator role check
+    // Reads authenticated user's /users/{request.auth.uid} document.
+    // Safe because the user's own /users/{userId} READ rule does not depend on isAdmin().
+    function isAdmin() {
+      return isSuperAdminEmail() || (
+        isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin'
+        )
+      );
+    }
+
+    // 5. Public read condition: only published articles are readable by public
+    function isDocPublished() {
+      return resource != null && (
+        resource.data.published == true ||
+        resource.data.status == 'published'
+      );
+    }
+
+    // ============================================================
+    // USERS collection (/users/{userId})
+    // ============================================================
+    match /users/{userId} {
+      // Allow READ when isSelf(userId) is true.
+      // Do NOT call isAdmin() for this self-read.
+      // Allow administrative reads only through the administrator role check.
+      allow read: if isSelf(userId) || isAdmin();
+
+      // Users can create their own profile document, but cannot self-assign elevated roles.
+      // Admins/superadmins can create profiles.
+      allow create: if isSignedIn() && (
+        isAdmin() ||
+        (isSelf(userId) && (
+          !('role' in request.resource.data) ||
+          request.resource.data.role == 'viewer' ||
+          request.resource.data.role == 'editor'
+        ))
+      );
+
+      // Users can update their own profile, but must NOT be allowed to modify their own role or privileges.
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        (
+          isSelf(userId) &&
+          request.resource.data.role == resource.data.role
+        )
+      );
+
+      // Delete: Restricted to administrator.
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // ARTICLES collection (/articles/{articleId})
+    // ============================================================
+    match /articles/{articleId} {
+      // Public READ only for published articles, preserving the existing published-article behavior.
+      // Admin or superadmin can read all articles (including drafts).
+      allow get: if isDocPublished() || isAdmin();
+      allow list: if isDocPublished() || isAdmin();
+
+      // CREATE, UPDATE and DELETE only for admin or superadmin.
+      // Never make articles publicly writable.
+      allow create, update, delete: if isAdmin();
+    }
+
+    // BLOG POSTS (Legacy alias collection)
+    match /blogPosts/{postId} {
+      allow read: if isDocPublished() || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // TEMPLES
+    match /temples/{templeId} {
+      allow read: if isDocPublished() || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // HERITAGE
+    match /heritage/{heritageId} {
+      allow read: if isDocPublished() || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // PHOTOGRAPHY
+    match /photography/{photoId} {
+      allow read: if isDocPublished() || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // PROJECTS
+    match /projects/{projectId} {
+      allow read: if isDocPublished() || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // PAGES
+    match /pages/{pageId} {
+      allow read: if isDocPublished() || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // CATEGORIES
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // HERO SETTINGS
+    match /heroSettings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // SITE SETTINGS
+    match /siteSettings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // SEO SETTINGS
+    match /seoSettings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // SYSTEM (connectivity verification)
+    match /system/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

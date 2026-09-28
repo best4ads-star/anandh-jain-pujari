@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-page: #F8F5EE;
+    --bg-card: #FFFFFF;
+    --bg-soft: #F1ECE2;
+    --text-primary: #142033;
+    --text-secondary: #4A5568;
+    --text-muted: #718096;
+    --border-subtle: #E6DFD1;
+    --color-gold: #B58A3C;
+    --color-maroon: #7A1F1F;
+  }
+
+  .dark {
+    --bg-page: #0D1420;
+    --bg-card: #142033;
+    --bg-soft: #1B283E;
+    --text-primary: #F8F5EE;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --border-subtle: #24354D;
+    --color-gold: #D8BD82;
+    --color-maroon: #A63838;
+  }
+
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, .font-serif-heading {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+
+  .font-playfair {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .font-script {
+    font-family: 'Caveat', cursive, serif;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1ECE2;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0D1420;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D8BD82;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B58A3C;
+}
+
+/* Botanical decorative leaf motif helper */
+.gold-accent {
+  color: #B58A3C;
+}
+
+.dark .gold-accent {
+  color: #D8BD82;
+}

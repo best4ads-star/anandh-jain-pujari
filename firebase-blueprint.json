@@ -1,0 +1,259 @@
+{
+  "entities": {
+    "Article": {
+      "title": "Article",
+      "description": "Heritage and research article in Cloud Firestore.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document identifier" },
+        "title": { "type": "string", "maxLength": 300, "description": "Article headline" },
+        "slug": { "type": "string", "maxLength": 200, "description": "URL slug" },
+        "excerpt": { "type": "string", "maxLength": 1000, "description": "Short excerpt summary" },
+        "content": { "type": "string", "description": "Full article markdown or body" },
+        "coverImage": { "type": "string", "description": "Cover photo storage or public URL" },
+        "category": { "type": "string", "description": "Heritage category" },
+        "tags": { "type": "array", "description": "Topic tags" },
+        "author": { "type": "object", "description": "Author details" },
+        "authorBio": { "type": "string", "description": "Author biography" },
+        "published": { "type": "boolean", "description": "Whether the article is published live" },
+        "featured": { "type": "boolean", "description": "Whether the article is featured on the hero" },
+        "publishedAt": { "type": "string", "description": "Publication timestamp or date" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" },
+        "readingTime": { "type": "string", "description": "Estimated reading duration" },
+        "seoTitle": { "type": "string", "description": "Search engine title tag" },
+        "seoDescription": { "type": "string", "description": "Meta description" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" }
+      },
+      "required": ["title", "slug", "published"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "role": { "type": "string", "enum": ["superadmin", "admin", "editor", "viewer"], "description": "User permission role" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      },
+      "required": ["email", "role"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "Article in the research and heritage blog.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID" },
+        "title": { "type": "string", "maxLength": 300, "description": "Article headline" },
+        "slug": { "type": "string", "maxLength": 200, "description": "URL slug" },
+        "excerpt": { "type": "string", "maxLength": 1000, "description": "Short summary" },
+        "content": { "type": "string", "description": "Full article markdown or body text" },
+        "coverImage": { "type": "string", "description": "Cover photo URL" },
+        "category": { "type": "string", "description": "Heritage category" },
+        "tags": { "type": "array", "description": "Topic tags" },
+        "status": { "type": "string", "enum": ["published", "draft", "archived"], "description": "Publication status" },
+        "readingTime": { "type": "string", "description": "Estimated reading duration" },
+        "author": { "type": "object", "description": "Author details" },
+        "seoDescription": { "type": "string", "description": "Search meta description" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["title", "slug", "status"]
+    },
+    "Temple": {
+      "title": "Temple",
+      "description": "Historical Jain temple documentation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID" },
+        "name": { "type": "string", "maxLength": 200, "description": "Temple name" },
+        "slug": { "type": "string", "maxLength": 200, "description": "URL slug" },
+        "deity": { "type": "string", "description": "Presiding Tirthankara" },
+        "location": { "type": "string", "description": "Geographic location / village" },
+        "era": { "type": "string", "description": "Historical dynasty or era" },
+        "description": { "type": "string", "description": "Detailed research overview" },
+        "status": { "type": "string", "enum": ["published", "draft"], "description": "Publication status" },
+        "images": { "type": "array", "description": "Image gallery assets" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["name", "slug", "status"]
+    },
+    "Heritage": {
+      "title": "Heritage",
+      "description": "Kongu Nadu & Tamil Jain cultural archives.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID" },
+        "title": { "type": "string", "description": "Heritage entry title" },
+        "slug": { "type": "string", "description": "URL identifier" },
+        "summary": { "type": "string", "description": "Executive summary" },
+        "details": { "type": "string", "description": "Detailed historical content" },
+        "status": { "type": "string", "enum": ["published", "draft"], "description": "Status" },
+        "media": { "type": "array", "description": "Attached media items" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["title", "slug", "status"]
+    },
+    "Photography": {
+      "title": "Photography",
+      "description": "Curated field photography record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID" },
+        "title": { "type": "string", "description": "Photograph title" },
+        "category": { "type": "string", "description": "Architecture, sanctum, inscription, or festival" },
+        "imageUrl": { "type": "string", "description": "Storage or CDN image URL" },
+        "caption": { "type": "string", "description": "Field caption" },
+        "location": { "type": "string", "description": "Location captured" },
+        "status": { "type": "string", "enum": ["published", "draft"], "description": "Publication status" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["title", "imageUrl", "status"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Creative, cultural, and archival projects.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID" },
+        "title": { "type": "string", "description": "Project title" },
+        "slug": { "type": "string", "description": "Slug" },
+        "description": { "type": "string", "description": "Project summary" },
+        "category": { "type": "string", "description": "Project category" },
+        "link": { "type": "string", "description": "Optional external or demo link" },
+        "status": { "type": "string", "enum": ["published", "draft"], "description": "Status" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["title", "slug", "status"]
+    },
+    "Page": {
+      "title": "Page",
+      "description": "Custom editable site page.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID" },
+        "title": { "type": "string", "description": "Page title" },
+        "slug": { "type": "string", "description": "Page slug" },
+        "content": { "type": "string", "description": "Page content" },
+        "status": { "type": "string", "enum": ["published", "draft"], "description": "Status" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["title", "slug", "status"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Taxonomy category for content.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID" },
+        "name": { "type": "string", "description": "Category name" },
+        "slug": { "type": "string", "description": "Category slug" },
+        "description": { "type": "string", "description": "Short description" },
+        "type": { "type": "string", "description": "Target collection type" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["name", "slug"]
+    },
+    "HeroSettings": {
+      "title": "HeroSettings",
+      "description": "Global dynamic configuration for the homepage hero.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID (usually 'default')" },
+        "greeting": { "type": "string", "description": "Badge text" },
+        "title": { "type": "string", "description": "Display name" },
+        "subtitle": { "type": "string", "description": "Heritage tagline" },
+        "quote": { "type": "string", "description": "Philosophical quote" },
+        "quoteAuthor": { "type": "string", "description": "Attribution" },
+        "status": { "type": "string", "enum": ["published", "draft"], "description": "Status" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["title", "subtitle"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Site-wide contact and global metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID (e.g. 'general')" },
+        "siteName": { "type": "string", "description": "Brand name" },
+        "tagline": { "type": "string", "description": "Site subtitle" },
+        "contactEmail": { "type": "string", "description": "Official contact" },
+        "socialLinks": { "type": "object", "description": "Social profile handles" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["siteName"]
+    },
+    "SeoSettings": {
+      "title": "SeoSettings",
+      "description": "Global default search engine metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Document ID (e.g. 'global')" },
+        "defaultTitle": { "type": "string", "description": "Meta title template" },
+        "defaultDescription": { "type": "string", "description": "Meta description" },
+        "defaultOgImage": { "type": "string", "description": "Social share graphic" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["defaultTitle", "defaultDescription"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and role access control"
+    },
+    "/articles/{articleId}": {
+      "schema": "Article",
+      "description": "Heritage and research articles collection"
+    },
+    "/blogPosts/{postId}": {
+      "schema": "BlogPost",
+      "description": "Heritage and research articles"
+    },
+    "/temples/{templeId}": {
+      "schema": "Temple",
+      "description": "Temple historical records"
+    },
+    "/heritage/{heritageId}": {
+      "schema": "Heritage",
+      "description": "Tamil & Kongu Jain culture archives"
+    },
+    "/photography/{photoId}": {
+      "schema": "Photography",
+      "description": "Field photography archives"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Creative & preservation projects"
+    },
+    "/pages/{pageId}": {
+      "schema": "Page",
+      "description": "Custom editable site pages"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Taxonomy categories"
+    },
+    "/heroSettings/{settingId}": {
+      "schema": "HeroSettings",
+      "description": "Homepage hero dynamic settings"
+    },
+    "/siteSettings/{settingId}": {
+      "schema": "SiteSettings",
+      "description": "Global site metadata"
+    },
+    "/seoSettings/{settingId}": {
+      "schema": "SeoSettings",
+      "description": "Global SEO metadata"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isReasonableSize() {
+      return request.resource.size < 15 * 1024 * 1024; // 15 MB limit
+    }
+
+    // Supported folders: blog, temples, heritage, photography, projects, about, hero
+    match /{folder}/{allPaths=**} {
+      // Public website may read images
+      allow read: if folder in ['blog', 'temples', 'heritage', 'photography', 'projects', 'about', 'hero'];
+
+      // Only authenticated users (admins) can upload or delete media
+      allow write: if isSignedIn() &&
+        folder in ['blog', 'temples', 'heritage', 'photography', 'projects', 'about', 'hero'] &&
+        isImageFile() &&
+        isReasonableSize();
+
+      allow delete: if isSignedIn() &&
+        folder in ['blog', 'temples', 'heritage', 'photography', 'projects', 'about', 'hero'];
+    }
+  }
+}
