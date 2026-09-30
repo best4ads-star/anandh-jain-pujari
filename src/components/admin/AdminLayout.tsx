@@ -25,7 +25,7 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ currentPath, onNavigate, children }: AdminLayoutProps) {
-  const { user, adminProfile, isFirebaseConfigured, configStatus, logout } = useAuth();
+  const { user, adminProfile, isSuperAdmin, isFirebaseConfigured, configStatus, logout } = useAuth();
 
   const navItems = [
     { label: 'Overview', path: '/admin', icon: LayoutDashboard },
@@ -109,7 +109,7 @@ export function AdminLayout({ currentPath, onNavigate, children }: AdminLayoutPr
               </div>
               <div className="text-[10px] font-mono text-[#B58A3C] flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3" />
-                <span>{adminProfile?.role || 'unassigned'}</span>
+                <span>{adminProfile?.role || (isSuperAdmin ? 'superadmin' : 'unassigned')}</span>
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@ export function AdminLayout({ currentPath, onNavigate, children }: AdminLayoutPr
 
           <div className="flex items-center gap-3">
             <div className="text-[11px] font-mono text-[#718096] dark:text-[#94A3B8]">
-              Role: <span className="text-[#B58A3C] font-semibold">{adminProfile?.role || 'unassigned'}</span>
+              Role: <span className="text-[#B58A3C] font-semibold">{adminProfile?.role || (isSuperAdmin ? 'superadmin' : 'unassigned')}</span>
             </div>
           </div>
         </header>

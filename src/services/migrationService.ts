@@ -489,12 +489,35 @@ export async function runRealFirestoreVerificationAndMigration(
   let userDocRole = 'none';
   try {
     const userDocRef = doc(db, COLLECTIONS.USERS, authenticatedUid);
-    const userDocSnap = await getDocFromServer(userDocRef);
+    let userDocSnap = await getDocFromServer(userDocRef);
+
+    const isSuperAdminUser = authenticatedEmail.toLowerCase() === 'bestanandh@gmail.com';
+
+    if (!userDocSnap.exists() && isSuperAdminUser) {
+      await setDoc(userDocRef, {
+        id: authenticatedUid,
+        email: authenticatedEmail,
+        displayName: 'Anandh Jain Pujari',
+        role: 'superadmin',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      userDocSnap = await getDocFromServer(userDocRef);
+    } else if (userDocSnap.exists() && isSuperAdminUser) {
+      const existingData = userDocSnap.data();
+      if (existingData?.role !== 'superadmin') {
+        await setDoc(userDocRef, {
+          role: 'superadmin',
+          updatedAt: new Date().toISOString(),
+        }, { merge: true });
+        userDocSnap = await getDocFromServer(userDocRef);
+      }
+    }
 
     if (userDocSnap.exists()) {
       userDocExists = true;
       const data = userDocSnap.data();
-      userDocRole = data?.role || 'none';
+      userDocRole = data?.role || (isSuperAdminUser ? 'superadmin' : 'none');
       if (userDocRole === 'superadmin' || userDocRole === 'admin') {
         updateStep(3, 'success', `Document /${userDocPath} verified on server with role: "${userDocRole}"`);
       } else {

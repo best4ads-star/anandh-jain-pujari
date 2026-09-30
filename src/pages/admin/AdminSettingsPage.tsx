@@ -14,7 +14,7 @@ import {
   CloudUpload,
   Layers,
 } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuth } from '../../services/firebase/AuthContext';
 import {
   getFirestoreDb,
@@ -76,14 +76,38 @@ export function AdminSettingsPage() {
     setUserDocStatus(prev => ({ ...prev, checking: true, error: null, docPath: `users/${currentUid}` }));
     try {
       const userRef = doc(db, 'users', currentUid);
-      const snap = await getDoc(userRef);
+      let snap = await getDoc(userRef);
+
+      const isSuperAdminEmail = (auth?.currentUser?.email || '').trim().toLowerCase() === 'bestanandh@gmail.com';
+
+      if (!snap.exists() && isSuperAdminEmail) {
+        await setDoc(userRef, {
+          id: currentUid,
+          uid: currentUid,
+          email: auth?.currentUser?.email || 'bestanandh@gmail.com',
+          displayName: auth?.currentUser?.displayName || 'Anandh Jain Pujari',
+          role: 'superadmin',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+        snap = await getDoc(userRef);
+      } else if (snap.exists() && isSuperAdminEmail) {
+        const data = snap.data();
+        if (data?.role !== 'superadmin') {
+          await setDoc(userRef, {
+            role: 'superadmin',
+            updatedAt: new Date().toISOString(),
+          }, { merge: true });
+          snap = await getDoc(userRef);
+        }
+      }
 
       if (snap.exists()) {
         const data = snap.data();
         setUserDocStatus({
           checking: false,
           exists: true,
-          role: data?.role || 'none',
+          role: data?.role || (isSuperAdminEmail ? 'superadmin' : 'none'),
           email: data?.email || auth?.currentUser?.email || null,
           docPath: `users/${currentUid}`,
           error: null,

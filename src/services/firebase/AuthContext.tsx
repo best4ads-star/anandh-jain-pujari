@@ -13,6 +13,8 @@ import {
   fetchAdminProfile,
   subscribeToAuthChanges,
   AdminAuthProfile,
+  isPermanentSuperAdminEmail,
+  PERMANENT_SUPERADMIN_EMAIL,
 } from './auth';
 import { getFirebaseConfigStatus, FirebaseConfigStatus } from './config';
 
@@ -56,11 +58,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(fbUser);
       if (fbUser) {
         try {
-          const profile = await fetchAdminProfile(fbUser.uid);
+          const profile = await fetchAdminProfile(
+            fbUser.uid,
+            fbUser.email,
+            fbUser.displayName || 'Anandh Jain Pujari'
+          );
           setAdminProfile(profile);
         } catch (err) {
           console.warn('Admin profile load note:', err);
-          setAdminProfile(null);
+          if (isPermanentSuperAdminEmail(fbUser.email)) {
+            setAdminProfile({
+              id: fbUser.uid,
+              email: fbUser.email || PERMANENT_SUPERADMIN_EMAIL,
+              displayName: fbUser.displayName || 'Anandh Jain Pujari',
+              role: 'superadmin',
+              isSuperAdmin: true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            });
+          } else {
+            setAdminProfile(null);
+          }
         }
       } else {
         setAdminProfile(null);
@@ -77,11 +95,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const fbUser = await loginAdminUser(email, pass);
       setUser(fbUser);
       try {
-        const profile = await fetchAdminProfile(fbUser.uid);
+        const profile = await fetchAdminProfile(
+          fbUser.uid,
+          fbUser.email || email,
+          fbUser.displayName || 'Anandh Jain Pujari'
+        );
         setAdminProfile(profile);
       } catch (profileErr) {
         console.warn('Profile fetch note:', profileErr);
-        setAdminProfile(null);
+        if (isPermanentSuperAdminEmail(fbUser.email || email)) {
+          setAdminProfile({
+            id: fbUser.uid,
+            email: fbUser.email || email,
+            displayName: fbUser.displayName || 'Anandh Jain Pujari',
+            role: 'superadmin',
+            isSuperAdmin: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+        } else {
+          setAdminProfile(null);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -101,17 +135,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshProfile = async () => {
     if (user) {
-      const profile = await fetchAdminProfile(user.uid);
+      const profile = await fetchAdminProfile(
+        user.uid,
+        user.email,
+        user.displayName || 'Anandh Jain Pujari'
+      );
       setAdminProfile(profile);
     }
   };
 
-  const isSuper = adminProfile?.role === 'superadmin';
+  const isSuper = isPermanentSuperAdminEmail(user?.email) || adminProfile?.role === 'superadmin' || adminProfile?.isSuperAdmin === true;
   const isAdminUser = isSuper || adminProfile?.role === 'admin';
+
+  // Construct effectiveProfile so role is ALWAYS 'superadmin' for bestanandh@gmail.com
+  const effectiveProfile: AdminAuthProfile | null = user
+    ? {
+        id: user.uid,
+        email: user.email || PERMANENT_SUPERADMIN_EMAIL,
+        displayName: adminProfile?.displayName || user.displayName || 'Anandh Jain Pujari',
+        role: isSuper ? 'superadmin' : (adminProfile?.role || 'viewer'),
+        isSuperAdmin: isSuper,
+        createdAt: adminProfile?.createdAt || new Date().toISOString(),
+        updatedAt: adminProfile?.updatedAt || new Date().toISOString(),
+      }
+    : adminProfile;
 
   const value: AuthContextType = {
     user,
-    adminProfile,
+    adminProfile: effectiveProfile,
     isAuthenticated: !!user,
     isAdmin: isAdminUser,
     isSuperAdmin: isSuper,

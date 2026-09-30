@@ -82,19 +82,20 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
         
         {/* ========================================================
             DESKTOP BACKGROUND ARTWORK: Temple, Anandh & Birds
-            Seamlessly blended into #F8F5EE (no card / no box)
+            Now featuring the Pujari at the historic Blue Temple
+            on the left side of the current hero banner
             ======================================================== */}
         <div
-          className="hidden lg:block absolute right-0 bottom-0 top-0 w-[57%] xl:w-[55%] pointer-events-none select-none z-0 overflow-hidden"
+          className="hidden lg:block absolute right-0 bottom-0 top-0 w-[60%] xl:w-[58%] pointer-events-none select-none z-0 overflow-hidden"
           aria-hidden="true"
         >
-          <div className="relative w-full h-full flex items-end justify-center">
+          <div className="relative w-full h-full flex items-end justify-end">
             {/* Soft watercolor / wash gradient edge masks on left, top and bottom */}
             <div
               className="absolute inset-0 z-10 pointer-events-none"
               style={{
                 background:
-                  'linear-gradient(to right, #F8F5EE 0%, rgba(248, 245, 238, 0.85) 6%, rgba(248, 245, 238, 0) 20%), linear-gradient(to top, #F8F5EE 0%, rgba(248, 245, 238, 0) 10%), linear-gradient(to bottom, #F8F5EE 0%, rgba(248, 245, 238, 0) 6%)',
+                  'linear-gradient(to right, #F8F5EE 0%, rgba(248, 245, 238, 0.85) 6%, rgba(248, 245, 238, 0) 18%), linear-gradient(to top, #F8F5EE 0%, rgba(248, 245, 238, 0) 10%), linear-gradient(to bottom, #F8F5EE 0%, rgba(248, 245, 238, 0) 6%)',
               }}
             />
             {/* Dark mode blending gradient */}
@@ -102,47 +103,59 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
               className="hidden dark:block absolute inset-0 z-10 pointer-events-none"
               style={{
                 background:
-                  'linear-gradient(to right, #0D1420 0%, rgba(13, 20, 32, 0.9) 8%, rgba(13, 20, 32, 0) 22%), linear-gradient(to top, #0D1420 0%, rgba(13, 20, 32, 0) 12%), linear-gradient(to bottom, #0D1420 0%, rgba(13, 20, 32, 0) 6%)',
+                  'linear-gradient(to right, #0D1420 0%, rgba(13, 20, 32, 0.9) 8%, rgba(13, 20, 32, 0) 20%), linear-gradient(to top, #0D1420 0%, rgba(13, 20, 32, 0) 12%), linear-gradient(to bottom, #0D1420 0%, rgba(13, 20, 32, 0) 6%)',
               }}
             />
 
             {/* Soaring birds in the sky over the temple spires */}
-            <div className="absolute top-10 left-[26%] z-20 opacity-75">
+            <div className="absolute top-10 left-[34%] z-20 opacity-75">
               <SoaringBirds className="w-24 h-12 text-[#142033]/70 dark:text-[#CBD5E1]/60" />
             </div>
 
-            {/* Primary Artwork: Seamless composition of Anandh & Jain Temple */}
-            {useComposite ? (
+            {/* LEFT SIDE OF CURRENT HERO BANNER: Pujari at Historic Blue Shrine */}
+            <div className="relative z-10 w-[47%] h-[94%] flex items-end justify-center -mr-10 mb-0 transition-transform duration-700 ease-out hover:scale-[1.01]">
               <img
-                src={artworkSrc}
-                alt="Anandh Jain Pujari in front of historic Jain temple"
-                className="w-full h-full object-contain object-bottom max-h-[580px] xl:max-h-[620px] transition-transform duration-700 ease-out hover:scale-[1.01]"
+                src="/images/hero/pujari-blue-temple.jpg"
+                alt="Sri Anandh Jain Pujari standing before the blue heritage Jain shrine"
+                className="w-full h-full object-contain object-bottom mix-blend-multiply dark:mix-blend-normal drop-shadow-sm filter contrast-[1.03]"
                 referrerPolicy="no-referrer"
-                onError={() => {
-                  // Fallback to layered temple + portrait if hero-artwork is unavailable
-                  setUseComposite(false);
-                }}
               />
-            ) : (
-              <div className="relative w-full h-full flex items-end justify-center">
-                {/* Temple background layer */}
+            </div>
+
+            {/* RIGHT SIDE: Current Hero Banner Artwork (Temple & Carvings) */}
+            <div className="relative z-0 w-[57%] h-full flex items-end justify-center">
+              {useComposite ? (
                 <img
-                  src="/images/hero/temple.png"
-                  alt="Historic carved Jain temple architecture"
-                  className="absolute inset-0 w-full h-full object-contain object-bottom opacity-90"
+                  src={artworkSrc}
+                  alt="Anandh Jain Pujari in front of historic Jain temple"
+                  className="w-full h-full object-contain object-bottom max-h-[580px] xl:max-h-[620px] transition-transform duration-700 ease-out hover:scale-[1.01]"
                   referrerPolicy="no-referrer"
+                  onError={() => {
+                    // Fallback to layered temple + portrait if hero-artwork is unavailable
+                    setUseComposite(false);
+                  }}
                 />
-                {/* Center-Right Real Portrait cutout */}
-                <div className="relative z-10 w-[54%] h-[92%] flex items-end justify-center -ml-10">
+              ) : (
+                <div className="relative w-full h-full flex items-end justify-center">
+                  {/* Temple background layer */}
                   <img
-                    src="/images/hero/portrait.png"
-                    alt="Anandh Jain Pujari in traditional saffron clothing"
-                    className="w-full h-full object-contain object-bottom filter drop-shadow-sm"
+                    src="/images/hero/temple.png"
+                    alt="Historic carved Jain temple architecture"
+                    className="absolute inset-0 w-full h-full object-contain object-bottom opacity-90"
                     referrerPolicy="no-referrer"
                   />
+                  {/* Center-Right Real Portrait cutout */}
+                  <div className="relative z-10 w-[54%] h-[92%] flex items-end justify-center -ml-10">
+                    <img
+                      src="/images/hero/portrait.png"
+                      alt="Anandh Jain Pujari in traditional saffron clothing"
+                      className="w-full h-full object-contain object-bottom filter drop-shadow-sm"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
@@ -187,8 +200,14 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
           
           {/* Upper text group */}
           <div className="pt-2 lg:pt-6">
-            {/* 1. Uppercase Eyebrow */}
+            {/* 1. Uppercase Eyebrow with Pujari Heritage Icon */}
             <div className="inline-flex items-center gap-2 mb-3 lg:mb-4">
+              <img
+                src="/images/hero/pujari-blue-temple.jpg"
+                alt="Sri Anandh Jain Pujari"
+                className="w-5 h-5 rounded-full object-cover border border-[#B58A3C]/70 shadow-2xs"
+                referrerPolicy="no-referrer"
+              />
               <span className="text-[10px] sm:text-[11px] lg:text-xs font-semibold tracking-[0.24em] uppercase text-[#142033]/85 dark:text-[#D8BD82]">
                 JAIN PRIEST • DESIGNER • DIGITAL CREATOR •
               </span>
@@ -235,7 +254,7 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
               ======================================================== */}
           <div className="lg:hidden flex flex-col items-center my-6">
             {/* 5. Mobile Portrait + Temple Composition with Watercolor Edges */}
-            <div className="relative w-full max-w-lg aspect-[4/3] flex items-end justify-center overflow-hidden mb-6">
+            <div className="relative w-full max-w-lg aspect-[16/10] sm:aspect-[16/9] flex items-end justify-center overflow-hidden mb-6">
               {/* Watercolor soft fade edges */}
               <div
                 className="absolute inset-0 z-10 pointer-events-none"
@@ -256,15 +275,28 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
                 <SoaringBirds className="w-16 h-8 text-[#142033]/60 dark:text-[#CBD5E1]/50" />
               </div>
 
-              <img
-                src={artworkSrc}
-                alt="Anandh Jain Pujari in front of historic Jain temple"
-                className="w-full h-full object-contain object-bottom"
-                referrerPolicy="no-referrer"
-                onError={() => {
-                  setArtworkSrc('/images/hero/temple.png');
-                }}
-              />
+              {/* Dual artwork: New image on the left side of current hero banner */}
+              <div className="relative w-full h-full flex items-end justify-between">
+                <div className="relative z-10 w-[50%] h-full flex items-end justify-center -mr-4">
+                  <img
+                    src="/images/hero/pujari-blue-temple.jpg"
+                    alt="Sri Anandh Jain Pujari at blue heritage shrine"
+                    className="w-full h-full object-contain object-bottom mix-blend-multiply dark:mix-blend-normal"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="relative z-0 w-[56%] h-full flex items-end justify-center">
+                  <img
+                    src={artworkSrc}
+                    alt="Anandh Jain Pujari in front of historic Jain temple"
+                    className="w-full h-full object-contain object-bottom"
+                    referrerPolicy="no-referrer"
+                    onError={() => {
+                      setArtworkSrc('/images/hero/temple.png');
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* 6 & 7. Mobile Quote & Script Accent */}

@@ -61,11 +61,43 @@ export async function sendAdminPasswordReset(email: string): Promise<void> {
 }
 
 /**
- * Fetch or bootstrap user profile document from users/{uid}
+ * Designated permanent superadmin email
  */
-export async function fetchAdminProfile(uid: string): Promise<AdminAuthProfile | null> {
+export const PERMANENT_SUPERADMIN_EMAIL = 'bestanandh@gmail.com';
+
+export function isPermanentSuperAdminEmail(email?: string | null): boolean {
+  if (!email) return false;
+  return email.trim().toLowerCase() === PERMANENT_SUPERADMIN_EMAIL;
+}
+
+/**
+ * Fetch or bootstrap user profile document from users/{uid}.
+ * If the user is the designated superadmin (bestanandh@gmail.com),
+ * guarantees that their Firestore document exists and has role: 'superadmin'.
+ */
+export async function fetchAdminProfile(
+  uid: string,
+  userEmail?: string | null,
+  displayName: string = 'Anandh Jain Pujari'
+): Promise<AdminAuthProfile | null> {
+  const isSuper = isPermanentSuperAdminEmail(userEmail);
   const db = getFirestoreDb();
-  if (!db) return null;
+
+  // If no Firestore db instance is available yet
+  if (!db) {
+    if (isSuper) {
+      return {
+        id: uid,
+        email: userEmail || PERMANENT_SUPERADMIN_EMAIL,
+        displayName: displayName,
+        role: 'superadmin',
+        isSuperAdmin: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    }
+    return null;
+  }
 
   try {
     const docRef = doc(db, COLLECTIONS.USERS, uid);
@@ -73,30 +105,86 @@ export async function fetchAdminProfile(uid: string): Promise<AdminAuthProfile |
 
     if (snapshot.exists()) {
       const data = snapshot.data() as UserDocument;
+      
+      // If the authenticated user is bestanandh@gmail.com and the role is not superadmin,
+      // update the Firestore document so it contains role: "superadmin"
+      if (isSuper && data.role !== 'superadmin') {
+        const updatedFields = {
+          role: 'superadmin' as const,
+          updatedAt: new Date().toISOString(),
+        };
+        try {
+          await setDoc(docRef, updatedFields, { merge: true });
+        } catch (setErr) {
+          console.warn('Note: Could not merge superadmin role into user doc:', setErr);
+        }
+        return {
+          ...data,
+          ...updatedFields,
+          id: uid,
+          isSuperAdmin: true,
+        };
+      }
+
       return {
         ...data,
         id: uid,
-        isSuperAdmin: data.role === 'superadmin',
+        isSuperAdmin: isSuper || data.role === 'superadmin',
+        role: isSuper ? 'superadmin' : data.role,
+      };
+    }
+
+    // If the document does NOT exist and the user is the permanent superadmin,
+    // create the document in Firestore with role: "superadmin"
+    if (isSuper) {
+      const newDoc: UserDocument = {
+        id: uid,
+        email: userEmail || PERMANENT_SUPERADMIN_EMAIL,
+        displayName: displayName,
+        role: 'superadmin',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      try {
+        await setDoc(docRef, newDoc);
+      } catch (createErr) {
+        console.warn('Note: Could not create initial superadmin doc in Firestore:', createErr);
+      }
+
+      return {
+        ...newDoc,
+        isSuperAdmin: true,
       };
     }
 
     return null;
   } catch (error: any) {
     console.warn('Profile fetch note for uid', uid, error?.message || error);
+    if (isSuper) {
+      return {
+        id: uid,
+        email: userEmail || PERMANENT_SUPERADMIN_EMAIL,
+        displayName: displayName,
+        role: 'superadmin',
+        isSuperAdmin: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    }
     return null;
   }
 }
 
 /**
- * Fetches user profile document from users/{uid}.
- * Does not create or elevate roles from client code.
+ * Ensures user profile document in users/{uid} is created with role: "superadmin".
  */
 export async function ensureSuperAdminDocument(
   uid: string,
-  email: string,
+  email: string = PERMANENT_SUPERADMIN_EMAIL,
   displayName: string = 'Anandh Jain Pujari'
 ): Promise<AdminAuthProfile | null> {
-  return fetchAdminProfile(uid);
+  return fetchAdminProfile(uid, email, displayName);
 }
 
 /**
