@@ -49,37 +49,40 @@ export default function App() {
   const [isContactOpen, setIsContactOpen] = useState<boolean>(false);
 
   // Active section tracking
-  const [activeSection, setActiveSection] = useState<string>('blog');
+  const [activeSection, setActiveSection] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/about') return 'about';
+      if (path === '/blog' || path.startsWith('/blog/')) return 'blog';
+      if (path === '/temples' || path === '/heritage' || path.startsWith('/temples/') || path.startsWith('/heritage/')) return 'temples';
+      if (path === '/photography') return 'photography';
+      if (path === '/projects' || path.startsWith('/projects/')) return 'projects';
+      if (path === '/contact') return 'contact';
+      if (path.startsWith('/admin')) return 'admin';
+    }
+    return 'home';
+  });
 
-  // Active route tracking: default to the article route as requested
+  // Active route tracking: default to window.location.pathname or '/'
   const [currentPath, setCurrentPath] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return window.location.pathname === '/' || !window.location.pathname
-        ? '/blog/avalpoondurai-jain-temple-spiritual-legacy'
-        : window.location.pathname;
+      return window.location.pathname && window.location.pathname !== ''
+        ? window.location.pathname
+        : '/';
     }
-    return '/blog/avalpoondurai-jain-temple-spiritual-legacy';
+    return '/';
   });
 
   // Filtered articles (can be filtered by category)
   const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
 
-  // Synchronize URL and open /blog/avalpoondurai-jain-temple-spiritual-legacy in preview on load
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (window.location.pathname === '/' || !window.location.pathname) {
-        window.history.pushState({}, '', '/blog/avalpoondurai-jain-temple-spiritual-legacy');
-        setCurrentPath('/blog/avalpoondurai-jain-temple-spiritual-legacy');
-        setActiveSection('blog');
-      }
-    }
-  }, []);
-
-  // Handle URL route synchronization for clean URLs: /about, /blog, /blog/:slug, /heritage/:slug, /projects/:slug
+  // Handle URL route synchronization for clean URLs:
+  // /, /about, /blog, /blog/:slug, /heritage, /temples, /temples/:slug, /heritage/:slug, /photography, /projects, /projects/:slug, /contact, /admin
   useEffect(() => {
     const handleUrlChange = () => {
-      const path = window.location.pathname;
+      const path = window.location.pathname || '/';
       setCurrentPath(path);
+
       if (path === '/about') {
         setActiveSection('about');
         window.scrollTo({ top: 0, behavior: 'instant' });
@@ -90,9 +93,10 @@ export default function App() {
         setActiveSection('blog');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (path.startsWith('/admin')) {
-        setCurrentPath(path);
+        setActiveSection('admin');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (path.startsWith('/temples/') || path.startsWith('/heritage/')) {
+        setActiveSection('temples');
         const slug = path.replace(/^\/(temples|heritage)\//, '').replace(/\/$/, '');
         const matched = TEMPLES.find((t) => t.slug === slug || t.id === slug);
         if (matched) {
@@ -104,15 +108,28 @@ export default function App() {
           const el = document.getElementById('temples');
           el?.scrollIntoView({ behavior: 'smooth' });
         }, 80);
+      } else if (path === '/photography') {
+        setActiveSection('photography');
+        setTimeout(() => {
+          const el = document.getElementById('blog');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
       } else if (path.startsWith('/projects/')) {
+        setActiveSection('projects');
         const slug = path.replace('/projects/', '').replace(/\/$/, '');
         const matched = PROJECTS.find((p) => p.slug === slug || p.id === slug);
         if (matched) {
           setSelectedProject(matched);
         }
       } else if (path === '/projects') {
-        const el = document.getElementById('projects');
-        el?.scrollIntoView({ behavior: 'smooth' });
+        setActiveSection('projects');
+        setTimeout(() => {
+          const el = document.getElementById('projects');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
+      } else if (path === '/contact') {
+        setActiveSection('contact');
+        setIsContactOpen(true);
       } else if (path === '/' || !path) {
         setActiveSection('home');
         window.scrollTo({ top: 0, behavior: 'instant' });
@@ -264,25 +281,49 @@ export default function App() {
 
     // Already on homepage
     if (sectionId === 'home') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/');
+      }
+      setCurrentPath('/');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (sectionId === 'blog') {
-      const el = document.getElementById('blog');
-      el?.scrollIntoView({ behavior: 'smooth' });
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/blog');
+      }
+      setCurrentPath('/blog');
+      window.scrollTo({ top: 0, behavior: 'instant' });
     } else if (sectionId === 'heritage' || sectionId === 'temples') {
       if (typeof window !== 'undefined') {
         window.history.pushState({}, '', '/temples');
       }
+      setCurrentPath('/temples');
       const el = document.getElementById('temples');
       el?.scrollIntoView({ behavior: 'smooth' });
     } else if (sectionId === 'photography') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/photography');
+      }
+      setCurrentPath('/photography');
       const el = document.getElementById('blog');
       el?.scrollIntoView({ behavior: 'smooth' });
     } else if (sectionId === 'projects') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/projects');
+      }
+      setCurrentPath('/projects');
       const el = document.getElementById('projects');
       el?.scrollIntoView({ behavior: 'smooth' });
     } else if (sectionId === 'contact') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/contact');
+      }
+      setCurrentPath('/contact');
       setIsContactOpen(true);
     } else {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/');
+      }
+      setCurrentPath('/');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -443,7 +484,14 @@ export default function App() {
 
       <ContactModal
         isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
+        onClose={() => {
+          setIsContactOpen(false);
+          if (typeof window !== 'undefined' && window.location.pathname === '/contact') {
+            window.history.pushState({}, '', '/');
+            setCurrentPath('/');
+            setActiveSection('home');
+          }
+        }}
       />
     </div>
     </AuthProvider>
