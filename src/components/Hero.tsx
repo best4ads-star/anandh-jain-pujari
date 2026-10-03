@@ -81,9 +81,7 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
       <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 min-h-[560px] lg:h-[580px] xl:h-[620px] flex flex-col justify-between">
         
         {/* ========================================================
-            DESKTOP BACKGROUND ARTWORK: Temple, Anandh & Birds
-            Now featuring the Pujari at the historic Blue Temple
-            on the left side of the current hero banner
+            DESKTOP BACKGROUND ARTWORK: Temple & Birds
             ======================================================== */}
         <div
           className="hidden lg:block absolute right-0 bottom-0 top-0 w-[60%] xl:w-[58%] pointer-events-none select-none z-0 overflow-hidden"
@@ -112,31 +110,21 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
               <SoaringBirds className="w-24 h-12 text-[#142033]/70 dark:text-[#CBD5E1]/60" />
             </div>
 
-            {/* LEFT SIDE OF CURRENT HERO BANNER: Pujari at Historic Blue Shrine */}
-            <div className="relative z-10 w-[47%] h-[94%] flex items-end justify-center -mr-10 mb-0 transition-transform duration-700 ease-out hover:scale-[1.01]">
-              <img
-                src="/images/hero/pujari-blue-temple.jpg"
-                alt="Sri Anandh Jain Pujari standing before the blue heritage Jain shrine"
-                className="w-full h-full object-contain object-bottom mix-blend-multiply dark:mix-blend-normal drop-shadow-sm filter contrast-[1.03]"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-
-            {/* RIGHT SIDE: Current Hero Banner Artwork (Temple & Carvings) */}
-            <div className="relative z-0 w-[57%] h-full flex items-end justify-center">
+            {/* Background Temple & Architecture Artwork */}
+            <div className="relative z-0 w-full h-full flex items-end justify-end">
               {useComposite ? (
                 <img
                   src={artworkSrc}
-                  alt="Anandh Jain Pujari in front of historic Jain temple"
+                  alt="Anandh Jain Pujari heritage artwork"
                   className="w-full h-full object-contain object-bottom max-h-[580px] xl:max-h-[620px] transition-transform duration-700 ease-out hover:scale-[1.01]"
                   referrerPolicy="no-referrer"
                   onError={() => {
-                    // Fallback to layered temple + portrait if hero-artwork is unavailable
+                    // Fallback to layered temple + authentic portrait if hero-artwork is unavailable
                     setUseComposite(false);
                   }}
                 />
               ) : (
-                <div className="relative w-full h-full flex items-end justify-center">
+                <div className="relative w-full h-full flex items-end justify-end">
                   {/* Temple background layer */}
                   <img
                     src="/images/hero/temple.png"
@@ -144,11 +132,11 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
                     className="absolute inset-0 w-full h-full object-contain object-bottom opacity-90"
                     referrerPolicy="no-referrer"
                   />
-                  {/* Center-Right Real Portrait cutout */}
+                  {/* Authentic portrait from project */}
                   <div className="relative z-10 w-[54%] h-[92%] flex items-end justify-center -ml-10">
                     <img
-                      src="/images/hero/portrait.png"
-                      alt="Anandh Jain Pujari in traditional saffron clothing"
+                      src="/images/about/anandh-jain-pujari.jpg"
+                      alt="Sri Anandh Jain Pujari"
                       className="w-full h-full object-contain object-bottom filter drop-shadow-sm"
                       referrerPolicy="no-referrer"
                     />
@@ -203,7 +191,7 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
             {/* 1. Uppercase Eyebrow with Pujari Heritage Icon */}
             <div className="inline-flex items-center gap-2 mb-3 lg:mb-4">
               <img
-                src="/images/hero/pujari-blue-temple.jpg"
+                src="/images/about/anandh-jain-pujari.jpg"
                 alt="Sri Anandh Jain Pujari"
                 className="w-5 h-5 rounded-full object-cover border border-[#B58A3C]/70 shadow-2xs"
                 referrerPolicy="no-referrer"
@@ -275,27 +263,17 @@ export function Hero({ onExploreJourney, onReadBlog }: HeroProps) {
                 <SoaringBirds className="w-16 h-8 text-[#142033]/60 dark:text-[#CBD5E1]/50" />
               </div>
 
-              {/* Dual artwork: New image on the left side of current hero banner */}
-              <div className="relative w-full h-full flex items-end justify-between">
-                <div className="relative z-10 w-[50%] h-full flex items-end justify-center -mr-4">
-                  <img
-                    src="/images/hero/pujari-blue-temple.jpg"
-                    alt="Sri Anandh Jain Pujari at blue heritage shrine"
-                    className="w-full h-full object-contain object-bottom mix-blend-multiply dark:mix-blend-normal"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="relative z-0 w-[56%] h-full flex items-end justify-center">
-                  <img
-                    src={artworkSrc}
-                    alt="Anandh Jain Pujari in front of historic Jain temple"
-                    className="w-full h-full object-contain object-bottom"
-                    referrerPolicy="no-referrer"
-                    onError={() => {
-                      setArtworkSrc('/images/hero/temple.png');
-                    }}
-                  />
-                </div>
+              {/* Artwork */}
+              <div className="relative w-full h-full flex items-end justify-center">
+                <img
+                  src={artworkSrc}
+                  alt="Historic Jain temple architecture"
+                  className="w-full h-full object-contain object-bottom"
+                  referrerPolicy="no-referrer"
+                  onError={() => {
+                    setArtworkSrc('/images/hero/temple.png');
+                  }}
+                />
               </div>
             </div>
 

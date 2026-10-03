@@ -24,9 +24,7 @@ export function BlogFeaturedCard({ post, onReadArticle }: BlogFeaturedCardProps)
             loading="eager"
             onError={(e) => {
               const target = e.currentTarget;
-              if (!target.src.includes('unsplash')) {
-                target.src = 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80';
-              }
+              target.src = '/images/blog/avalpoondurai/cover.jpg';
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:hidden" />

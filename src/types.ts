@@ -105,6 +105,7 @@ export interface Temple {
   featured?: boolean;
   era?: string;
   features?: string[];
+  hasVerifiedPhoto?: boolean;
 }
 
 export interface Project {

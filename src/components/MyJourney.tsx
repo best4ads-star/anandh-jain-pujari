@@ -32,8 +32,7 @@ export function MyJourney({ onReadStory }: MyJourneyProps) {
                     referrerPolicy="no-referrer"
                     loading="lazy"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80';
+                      (e.target as HTMLImageElement).src = '/images/about/photography.jpg';
                     }}
                   />
                   {/* Subtle gentle bottom vignette for depth */}

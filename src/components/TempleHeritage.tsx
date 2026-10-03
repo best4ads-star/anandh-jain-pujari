@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, ArrowRight } from 'lucide-react';
+import { MapPin, ArrowRight, Landmark } from 'lucide-react';
 import { Temple } from '../types';
 import { GoldLeafBranch } from './Icons';
 
@@ -11,7 +11,7 @@ interface TempleHeritageProps {
 
 // Prepared future alt text for authentic temple photography
 const TEMPLE_ALT_TEXTS: Record<string, string> = {
-  avalpoondurai: 'Avalpoondurai Jain Temple — Erode District, Tamil Nadu',
+  avalpoondurai: 'Avalpoondurai Shri Parshwanath Jain Temple — Erode District, Tamil Nadu',
   vellode: 'Vellode Jain Temple — Erode District, Tamil Nadu',
   seenapuram: 'Seenapuram Jain Temple — Erode District, Tamil Nadu',
   thingalur: 'Thingalur Jain Temple — Erode District, Tamil Nadu',
@@ -97,18 +97,30 @@ export function TempleHeritage({
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
                 {/* Large Temple Photograph (Left ~60% on desktop) */}
                 <div className="lg:col-span-7 relative aspect-[16/10] sm:aspect-[16/9] lg:aspect-[16/10.5] overflow-hidden bg-[#ECE5D8] dark:bg-[#1A263B]">
-                  <img
-                    src={featuredTemple.coverImage || featuredTemple.image}
-                    alt={TEMPLE_ALT_TEXTS[featuredTemple.slug || featuredTemple.id] || `${featuredTemple.name} Jain Temple — Erode District, Tamil Nadu`}
-                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1200&q=80';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
+                  {featuredTemple.hasVerifiedPhoto && (featuredTemple.coverImage || featuredTemple.image) ? (
+                    <>
+                      <img
+                        src={featuredTemple.coverImage || featuredTemple.image}
+                        alt={TEMPLE_ALT_TEXTS[featuredTemple.slug || featuredTemple.id] || `${featuredTemple.name} — Erode District, Tamil Nadu`}
+                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-[#F1EBE0] dark:bg-[#152336] text-center select-none">
+                      <div className="w-14 h-14 rounded-full bg-[#E8E0D0] dark:bg-[#1E2E44] flex items-center justify-center mb-3 text-[#B58A3C] dark:text-[#D8BD82]">
+                        <Landmark className="w-7 h-7 opacity-75" />
+                      </div>
+                      <span className="text-xs font-semibold text-[#8C6219] dark:text-[#D8BD82] uppercase tracking-wider">
+                        {featuredTemple.town}
+                      </span>
+                      <span className="text-[11px] text-[#718096] dark:text-[#94A3B8] font-mono mt-1">
+                        Field Photo Documentation Pending
+                      </span>
+                    </div>
+                  )}
 
                   {/* Editorial Tag */}
                   <div className="absolute top-3.5 left-3.5 z-10">
@@ -166,21 +178,36 @@ export function TempleHeritage({
                 onClick={(e) => handleTempleClick(e, temple)}
                 className="group flex flex-col bg-white dark:bg-[#142033] rounded-md border border-[#E8E1D3] dark:border-[#23344D] shadow-[0_2px_8px_rgba(20,32,51,0.04)] hover:shadow-[0_8px_20px_rgba(20,32,51,0.08)] transition-all duration-300 cursor-pointer overflow-hidden"
               >
-                {/* Large temple photograph */}
-                <div className="relative aspect-[16/11] overflow-hidden bg-[#ECE5D8] dark:bg-[#1A263B]">
-                  <img
-                    src={temple.coverImage || temple.image}
-                    alt={TEMPLE_ALT_TEXTS[temple.slug || temple.id] || `${temple.name} Jain Temple — Erode District, Tamil Nadu`}
-                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
-                </div>
+                {/* Temple photograph OR Clean Neutral Placeholder */}
+                {temple.hasVerifiedPhoto && (temple.coverImage || temple.image) ? (
+                  <div className="relative aspect-[16/11] overflow-hidden bg-[#ECE5D8] dark:bg-[#1A263B]">
+                    <img
+                      src={temple.coverImage || temple.image}
+                      alt={TEMPLE_ALT_TEXTS[temple.slug || temple.id] || `${temple.name} — Erode District, Tamil Nadu`}
+                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
+                  </div>
+                ) : (
+                  <div className="relative aspect-[16/11] bg-[#F1EBE0] dark:bg-[#152336] border-b border-[#E6DFD1] dark:border-[#22334A] flex flex-col items-center justify-center p-4 text-center select-none overflow-hidden">
+                    <div className="w-12 h-12 rounded-full bg-[#E8E0D0] dark:bg-[#1E2E44] border border-[#DCD3C0] dark:border-[#2B3F5C] flex items-center justify-center mb-2 text-[#B58A3C] dark:text-[#D8BD82]">
+                      <Landmark className="w-5 h-5 opacity-75" />
+                    </div>
+                    <span className="text-xs font-semibold text-[#8C6219] dark:text-[#D8BD82] tracking-wider uppercase">
+                      {temple.town}
+                    </span>
+                    <span className="text-[10px] text-[#718096] dark:text-[#94A3B8] font-mono mt-1">
+                      Field Photo Documentation Pending
+                    </span>
+                    <div className="absolute bottom-2.5 right-2.5">
+                      <span className="text-[9px] font-mono tracking-wider px-2 py-0.5 rounded-xs bg-[#EAE2D4] dark:bg-[#1C2C40] text-[#718096] dark:text-[#94A3B8] border border-[#DDD3C2] dark:border-[#253952]">
+                        Documentation Site
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Card Body */}
                 <div className="p-5 flex-1 flex flex-col justify-between">
@@ -219,6 +246,138 @@ export function TempleHeritage({
                 </div>
               </article>
             ))}
+          </div>
+
+          {/* ==================================================
+              3. JAIN TEMPLES OF ERODE DISTRICT — TEMPLE DIRECTORY
+              Full directory with all 5 temples, rich cards, and View Temple buttons
+              ================================================== */}
+          <div className="pt-14 sm:pt-16 lg:pt-20 border-t border-[#E6DFD1] dark:border-[#23344D]">
+            {/* Directory Section Header */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 sm:mb-12">
+              <div>
+                <div className="inline-flex items-center gap-2 mb-2.5">
+                  <GoldLeafBranch className="w-4 h-4 text-[#B58A3C] dark:text-[#D8BD82]" />
+                  <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B58A3C] dark:text-[#D8BD82]">
+                    Sacred Heritage Directory
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 sm:gap-6">
+                  <h3 className="font-playfair text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#142033] dark:text-[#F8F5EE] tracking-tight leading-tight">
+                    Jain Temples of Erode District
+                  </h3>
+                  <div className="hidden sm:block h-[2px] bg-[#B58A3C] w-12 sm:w-16 opacity-80 shrink-0" />
+                </div>
+                <p className="mt-2.5 text-sm sm:text-base text-[#5F6470] dark:text-[#94A3B8] max-w-2xl font-normal leading-relaxed">
+                  Comprehensive directory of documented Jain temples, sacred shrines, and ancient epigraphical sites across Erode and Kongu Nadu.
+                </p>
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F1ECE2] dark:bg-[#1A263B] border border-[#E0D5BE] dark:border-[#25364D] text-xs font-semibold text-[#8C6219] dark:text-[#D8BD82] self-start sm:self-auto shrink-0 shadow-2xs">
+                <span>Temple Directory</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#B58A3C]" />
+                <span>5 Documented Sites</span>
+              </div>
+            </div>
+
+            {/* Directory Cards Grid (All 5 Temples) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 xl:gap-8">
+              {temples.map((temple, idx) => (
+                <article
+                  key={`directory-${temple.id}`}
+                  id={`directory-card-${temple.slug || temple.id}`}
+                  onClick={(e) => handleTempleClick(e, temple)}
+                  className="group flex flex-col bg-white dark:bg-[#142033] rounded-lg border border-[#E8E1D3] dark:border-[#23344D] shadow-[0_2px_10px_rgba(20,32,51,0.04)] hover:shadow-[0_12px_28px_rgba(20,32,51,0.09)] transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-0.5"
+                >
+                  {/* Card Image OR Neutral Placeholder */}
+                  {temple.hasVerifiedPhoto && (temple.coverImage || temple.image) ? (
+                    <div className="relative aspect-[16/10] overflow-hidden bg-[#ECE5D8] dark:bg-[#1A263B]">
+                      <img
+                        src={temple.coverImage || temple.image}
+                        alt={TEMPLE_ALT_TEXTS[temple.slug || temple.id] || `${temple.name} — Erode District, Tamil Nadu`}
+                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none" />
+
+                      {/* Verified Photo Badge */}
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className="inline-block text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-sm bg-[#F8F5EE]/95 dark:bg-[#142033]/95 backdrop-blur-xs text-[#8C6219] dark:text-[#D8BD82] border border-[#B58A3C]/25 shadow-2xs">
+                          Verified Field Photo
+                        </span>
+                      </div>
+
+                      {/* Town badge bottom right */}
+                      <div className="absolute bottom-3 right-3 z-10">
+                        <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-xs bg-black/60 text-white backdrop-blur-xs">
+                          {temple.town}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative aspect-[16/10] bg-[#F1EBE0] dark:bg-[#152336] border-b border-[#E6DFD1] dark:border-[#22334A] flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden">
+                      <div className="w-13 h-13 rounded-full bg-[#E8E0D0] dark:bg-[#1E2E44] border border-[#DCD3C0] dark:border-[#2B3F5C] flex items-center justify-center mb-3 text-[#B58A3C] dark:text-[#D8BD82] shadow-2xs">
+                        <Landmark className="w-6 h-6 opacity-75" />
+                      </div>
+                      <span className="text-xs font-semibold text-[#8C6219] dark:text-[#D8BD82] tracking-wider uppercase mb-1">
+                        {temple.town}
+                      </span>
+                      <span className="text-[11px] text-[#718096] dark:text-[#94A3B8] font-mono">
+                        Field Photo Documentation Pending
+                      </span>
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className="inline-block text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-xs bg-[#EAE2D4] dark:bg-[#1C2C40] text-[#718096] dark:text-[#94A3B8] border border-[#DDD3C2] dark:border-[#253952]">
+                          Documentation Site
+                        </span>
+                      </div>
+                      <div className="absolute bottom-3 right-3 z-10">
+                        <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-xs bg-[#EAE2D4] dark:bg-[#1C2C40] text-[#718096] dark:text-[#94A3B8]">
+                          Erode District
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Card Content */}
+                  <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                      {/* Location with Pin */}
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-[#B58A3C] dark:text-[#D8BD82] uppercase tracking-[0.14em] mb-2">
+                        <MapPin className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">{temple.location}</span>
+                      </div>
+
+                      {/* Temple Name */}
+                      <h4 className="font-playfair text-xl font-bold text-[#142033] dark:text-[#F8F5EE] group-hover:text-[#B58A3C] dark:group-hover:text-[#D8BD82] transition-colors duration-200 leading-snug mb-2.5">
+                        {temple.name}
+                      </h4>
+
+                      {/* Short Description */}
+                      <p className="text-[13px] sm:text-sm text-[#5F6470] dark:text-[#94A3B8] font-normal leading-relaxed line-clamp-3 mb-4">
+                        {temple.description}
+                      </p>
+                    </div>
+
+                    {/* Era & View Temple Button */}
+                    <div className="pt-4 border-t border-[#F0EBE1] dark:border-[#1E2E44] flex items-center justify-between mt-auto">
+                      <a
+                        id={`view-temple-btn-${temple.slug || temple.id}`}
+                        href={`/temples/${temple.slug || temple.id}`}
+                        onClick={(e) => handleTempleClick(e, temple)}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#142033] dark:bg-[#B58A3C] hover:bg-[#B58A3C] dark:hover:bg-[#C9A554] text-white dark:text-[#0D1420] text-xs font-semibold tracking-wide transition-all duration-200 shadow-2xs hover:shadow-xs group/btn cursor-pointer"
+                      >
+                        <span>View Temple</span>
+                        <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                      </a>
+                      <span className="text-[11px] font-mono text-[#94A3B8] dark:text-[#64748B]">
+                        0{idx + 1} / 05
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </div>

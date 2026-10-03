@@ -161,10 +161,7 @@ export function FieldPhotographyGallery({
                 loading="lazy"
                 onError={(e) => {
                   const target = e.currentTarget;
-                  if (!target.src.includes('unsplash')) {
-                    target.src =
-                      'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80';
-                  }
+                  target.src = '/images/blog/avalpoondurai/cover.jpg';
                 }}
               />
               <div className="absolute top-2 left-2 px-2 py-0.5 rounded-xs bg-[#142033]/80 backdrop-blur-xs text-[#E5D2A5] text-[9.5px] font-mono tracking-widest uppercase border border-[#B58A3C]/30">

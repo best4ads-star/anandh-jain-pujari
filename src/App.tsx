@@ -92,15 +92,18 @@ export default function App() {
       } else if (path.startsWith('/admin')) {
         setCurrentPath(path);
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (path.startsWith('/heritage/')) {
-        const slug = path.replace('/heritage/', '').replace(/\/$/, '');
+      } else if (path.startsWith('/temples/') || path.startsWith('/heritage/')) {
+        const slug = path.replace(/^\/(temples|heritage)\//, '').replace(/\/$/, '');
         const matched = TEMPLES.find((t) => t.slug === slug || t.id === slug);
         if (matched) {
           setSelectedTemple(matched);
         }
-      } else if (path === '/heritage') {
-        const el = document.getElementById('temples');
-        el?.scrollIntoView({ behavior: 'smooth' });
+      } else if (path === '/temples' || path === '/heritage') {
+        setActiveSection('temples');
+        setTimeout(() => {
+          const el = document.getElementById('temples');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
       } else if (path.startsWith('/projects/')) {
         const slug = path.replace('/projects/', '').replace(/\/$/, '');
         const matched = PROJECTS.find((p) => p.slug === slug || p.id === slug);
@@ -145,14 +148,17 @@ export default function App() {
   const handleOpenTemple = (temple: Temple) => {
     setSelectedTemple(temple);
     if (typeof window !== 'undefined') {
-      window.history.pushState({}, '', `/heritage/${temple.slug || temple.id}`);
+      window.history.pushState({}, '', `/temples/${temple.slug || temple.id}`);
     }
   };
 
   const handleCloseTemple = () => {
     setSelectedTemple(null);
-    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/heritage/')) {
-      window.history.pushState({}, '', '/');
+    if (
+      typeof window !== 'undefined' &&
+      (window.location.pathname.startsWith('/temples/') || window.location.pathname.startsWith('/heritage/'))
+    ) {
+      window.history.pushState({}, '', '/temples');
     }
   };
 
@@ -238,6 +244,9 @@ export default function App() {
         if (sectionId === 'home') {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (sectionId === 'heritage' || sectionId === 'temples') {
+          if (typeof window !== 'undefined') {
+            window.history.pushState({}, '', '/temples');
+          }
           const el = document.getElementById('temples');
           el?.scrollIntoView({ behavior: 'smooth' });
         } else if (sectionId === 'photography') {
@@ -260,6 +269,9 @@ export default function App() {
       const el = document.getElementById('blog');
       el?.scrollIntoView({ behavior: 'smooth' });
     } else if (sectionId === 'heritage' || sectionId === 'temples') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/temples');
+      }
       const el = document.getElementById('temples');
       el?.scrollIntoView({ behavior: 'smooth' });
     } else if (sectionId === 'photography') {

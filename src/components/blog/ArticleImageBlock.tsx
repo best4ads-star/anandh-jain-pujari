@@ -50,10 +50,7 @@ export function ArticleImageBlock({
           loading="lazy"
           onError={(e) => {
             const target = e.currentTarget;
-            if (!target.src.includes('unsplash')) {
-              target.src =
-                'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80';
-            }
+            target.src = '/images/blog/avalpoondurai/cover.jpg';
           }}
         />
 

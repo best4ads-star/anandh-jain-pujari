@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, MapPin, Compass, History, Sparkles, Navigation } from 'lucide-react';
+import { X, MapPin, Compass, History, Sparkles, Landmark } from 'lucide-react';
 import { Temple } from '../types';
 
 interface TempleModalProps {
@@ -35,15 +35,26 @@ export function TempleModal({ temple, onClose }: TempleModalProps) {
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-2xl bg-[#FAF7F0] dark:bg-[#142033] rounded-2xl shadow-2xl border border-[#E6DFD1] dark:border-[#263750] overflow-hidden my-8 max-h-[90vh] flex flex-col"
       >
-        {/* Temple Image Header */}
-        <div className="relative aspect-[16/8] w-full overflow-hidden bg-[#EAE2D2] dark:bg-[#18253B]">
-          <img
-            src={temple.coverImage || temple.image}
-            alt={`${temple.name} Jain Temple — Erode District, Tamil Nadu`}
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
+        {/* Temple Image / Neutral Header */}
+        <div className="relative aspect-[16/8] w-full overflow-hidden bg-[#243347] dark:bg-[#111A28]">
+          {temple.hasVerifiedPhoto && (temple.coverImage || temple.image) ? (
+            <>
+              <img
+                src={temple.coverImage || temple.image}
+                alt={`${temple.name} — Erode District, Tamil Nadu`}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
+            </>
+          ) : (
+            <div className="w-full h-full flex flex-col justify-between p-6 bg-gradient-to-br from-[#1C293A] via-[#142033] to-[#0D1420] text-white">
+              <div className="flex items-center gap-2 text-[#D8BD82] opacity-80">
+                <Landmark className="w-5 h-5" />
+                <span className="text-xs font-mono tracking-wider uppercase">Field Photo Documentation Pending</span>
+              </div>
+            </div>
+          )}
 
           {/* Close button */}
           <button
@@ -86,7 +97,7 @@ export function TempleModal({ temple, onClose }: TempleModalProps) {
           <div className="bg-[#F1ECE0] dark:bg-[#1B273A] p-4 rounded-xl border border-[#E4DCBC] dark:border-[#263750] flex items-center justify-between">
             <div>
               <span className="text-[11px] uppercase tracking-wider text-[#718096] dark:text-[#94A3B8] font-bold block">
-                Presiding Moolnayak Deity
+                {temple.hasVerifiedPhoto ? 'Presiding Moolnayak Deity' : 'Deity / Dedication'}
               </span>
               <span className="font-serif text-lg font-bold text-[#142033] dark:text-[#F8F5EE]">
                 {temple.deity}
